@@ -28,7 +28,8 @@ CONFIG_DIR = Path("config")
 def main():
     # Load 2-year hourly data
     logger.info("Loading 2-year hourly data...")
-    df_1h = pl.read_parquet("data/processed/MNQ/1h/all.parquet")
+    from engine.data.storage import read_bars
+    df_1h = read_bars("MNQ", "1h")
     logger.info(f"  {len(df_1h)} bars | {df_1h['timestamp'][0]} -> {df_1h['timestamp'][-1]}")
 
     # Load prop firm config

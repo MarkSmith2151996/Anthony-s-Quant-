@@ -13,7 +13,8 @@ from engine.utils import (
     load_session_config,
     load_events_calendar,
 )
-from engine.data_pipeline import load_parquet
+from engine.data.storage import read_bars
+from engine.data_pipeline import load_parquet  # legacy fallback
 from engine.risk_manager import RiskManager
 from engine.backtester import VectorizedBacktester
 from engine.metrics import calculate_metrics, print_metrics, TradeLogger
@@ -45,7 +46,7 @@ def run_with_data(data_path: str | None = None):
         df = pl.read_parquet(data_path)
     else:
         try:
-            df = load_parquet(DATA_DIR, "MNQ", "1m")
+            df = read_bars("MNQ", "1m", data_dir=DATA_DIR)
         except FileNotFoundError:
             print("No data found. Generating synthetic data for demo...")
             from tests.test_engine import generate_synthetic_data

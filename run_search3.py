@@ -93,7 +93,8 @@ def mc_test(trades, prop_rules, n_sims=3000):
 
 def main():
     logger.info("Loading 2-year data...")
-    df = pl.read_parquet("data/processed/MNQ/1m/all.parquet")
+    from engine.data.storage import read_bars
+    df = read_bars("MNQ", "1m")
     data = {"1m": df}
     logger.info(f"  {len(df):,} bars | {df['timestamp'][0]} -> {df['timestamp'][-1]}")
 

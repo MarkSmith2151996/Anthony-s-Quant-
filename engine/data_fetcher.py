@@ -1,4 +1,9 @@
-"""Data fetcher — download NQ/MNQ futures data from free sources."""
+"""Data fetcher — download NQ/MNQ futures data from free sources.
+
+NOTE: YahooProvider is also available via engine.data.providers.yahoo.
+New code should use engine.data.get_provider("yahoo") instead.
+This module is kept for backward compatibility.
+"""
 
 import logging
 from datetime import datetime, timedelta

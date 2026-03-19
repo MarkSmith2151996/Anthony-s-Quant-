@@ -36,8 +36,9 @@ TARGET_PNL = 2000.0
 
 
 def load_data():
-    df_1m = pl.read_parquet("data/processed/MNQ/1m/all.parquet")
-    df_5m = pl.read_parquet("data/processed/MNQ/5m/all.parquet")
+    from engine.data.storage import read_bars
+    df_1m = read_bars("MNQ", "1m")
+    df_5m = read_bars("MNQ", "5m")
     return {"1m": df_1m, "5m": df_5m}
 
 

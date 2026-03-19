@@ -27,7 +27,38 @@ class ContractSpec:
 MNQ_SPEC = ContractSpec(symbol="MNQ", tick_size=0.25, tick_value=0.50, point_value=2.0)
 NQ_SPEC = ContractSpec(symbol="NQ", tick_size=0.25, tick_value=5.00, point_value=20.0)
 
-CONTRACT_SPECS = {"MNQ": MNQ_SPEC, "NQ": NQ_SPEC}
+# Hardcoded defaults
+CONTRACT_SPECS: dict[str, ContractSpec] = {"MNQ": MNQ_SPEC, "NQ": NQ_SPEC}
+
+
+def _load_instrument_specs() -> dict[str, ContractSpec]:
+    """Load additional ContractSpecs from config/instruments/ YAML files."""
+    instruments_dir = Path(__file__).resolve().parent.parent / "config" / "instruments"
+    specs = dict(CONTRACT_SPECS)  # start with hardcoded defaults
+
+    if not instruments_dir.exists():
+        return specs
+
+    for yaml_file in instruments_dir.glob("*.yaml"):
+        try:
+            with open(yaml_file) as f:
+                data = yaml.safe_load(f)
+            symbol = data["symbol"]
+            if symbol not in specs:
+                specs[symbol] = ContractSpec(
+                    symbol=symbol,
+                    tick_size=float(data["tick_size"]),
+                    tick_value=float(data["tick_value"]),
+                    point_value=float(data["point_value"]),
+                )
+        except Exception:
+            continue
+
+    return specs
+
+
+# Dynamically extend CONTRACT_SPECS with YAML-defined instruments
+CONTRACT_SPECS.update(_load_instrument_specs())
 
 
 # ── Prop Firm Rules ──────────────────────────────────────────────────

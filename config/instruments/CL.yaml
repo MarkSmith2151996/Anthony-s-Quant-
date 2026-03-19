@@ -1,0 +1,18 @@
+symbol: CL
+exchange: NYMEX
+asset_class: commodity
+tick_size: 0.01
+tick_value: 10.00
+point_value: 1000.0
+micro_symbol: MCL
+micro_point_value: 100.0
+trading_hours:
+  globex_start: "18:00"
+  globex_end: "17:00"
+  rth_start: "09:00"
+  rth_end: "14:30"
+  maintenance_start: "17:00"
+  maintenance_end: "18:00"
+roll_method: calendar
+roll_days_before_expiry: 3
+contract_months: [F, G, H, J, K, M, N, Q, U, V, X, Z]

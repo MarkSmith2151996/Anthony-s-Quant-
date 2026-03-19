@@ -7,3 +7,5 @@ plotly>=5.18
 matplotlib>=3.8
 pyyaml>=6.0
 pytest>=7.0
+yfinance>=0.2
+# databento>=0.40  # Optional: uncomment for Databento provider support

@@ -1,0 +1,18 @@
+symbol: NQ
+exchange: CME
+asset_class: equity_index
+tick_size: 0.25
+tick_value: 5.00
+point_value: 20.0
+micro_symbol: MNQ
+micro_point_value: 2.0
+trading_hours:
+  globex_start: "18:00"  # Sunday ET
+  globex_end: "17:00"    # Friday ET
+  rth_start: "09:30"
+  rth_end: "16:00"
+  maintenance_start: "17:00"
+  maintenance_end: "18:00"
+roll_method: volume
+roll_days_before_expiry: 8
+contract_months: [H, M, U, Z]

@@ -1,4 +1,9 @@
-"""Data pipeline: ingestion, cleaning, contract stitching, bar construction."""
+"""Data pipeline: ingestion, cleaning, contract stitching, bar construction.
+
+NOTE: DataCleaner, ContractStitcher, and MotiveWaveIngestor are also available
+from the new engine.data package. New code should import from engine.data.
+This module is kept for backward compatibility.
+"""
 
 import re
 from datetime import datetime, time, timedelta

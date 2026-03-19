@@ -34,7 +34,8 @@ TARGET_PNL = 2000.0
 
 
 def load_data():
-    return pl.read_parquet("data/processed/MNQ/1m/all.parquet")
+    from engine.data.storage import read_bars
+    return read_bars("MNQ", "1m")
 
 
 def split_into_windows(df, window_days=30):

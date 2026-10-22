@@ -18,27 +18,31 @@ class DatabentoProvider(DataProvider):
 
     Supports 15yr+ of 1m history, live streaming, continuous contract symbology.
     Requires the `databento` package and a valid API key.
+
+    Symbology: uses continuous front-month contracts (e.g. "MNQ.c.0")
+    with stype_in="continuous".
     """
 
     name = "databento"
 
+    # Continuous front-month symbology
     SYMBOL_MAP = {
-        "NQ": "NQ.FUT.CME",
-        "MNQ": "MNQ.FUT.CME",
-        "ES": "ES.FUT.CME",
-        "MES": "MES.FUT.CME",
-        "GC": "GC.FUT.COMEX",
-        "CL": "CL.FUT.NYMEX",
+        "NQ": "NQ.c.0",
+        "MNQ": "MNQ.c.0",
+        "ES": "ES.c.0",
+        "MES": "MES.c.0",
+        "GC": "GC.c.0",
+        "CL": "CL.c.0",
     }
 
-    # Databento interval string mapping
+    # Databento schema mapping (SDK v0.70+)
     INTERVAL_MAP = {
-        "1m": "1min",
-        "5m": "5min",
-        "15m": "15min",
-        "30m": "30min",
-        "1h": "1hour",
-        "1d": "1day",
+        "1m": "1m",
+        "5m": "5m",
+        "15m": "15m",
+        "30m": "30m",
+        "1h": "1h",
+        "1d": "1d",
     }
 
     def __init__(self, api_key: str | None = None):
@@ -75,7 +79,6 @@ class DatabentoProvider(DataProvider):
         end: str | None = None,
     ) -> pl.DataFrame:
         """Fetch historical OHLCV bars from Databento."""
-        # Validate inputs before attempting client/SDK initialization
         db_symbol = self.SYMBOL_MAP.get(symbol.upper())
         if not db_symbol:
             raise ValueError(
@@ -104,6 +107,7 @@ class DatabentoProvider(DataProvider):
             dataset="GLBX.MDP3",
             symbols=[db_symbol],
             schema=f"ohlcv-{db_interval}",
+            stype_in="continuous",
             start=start,
             end=end,
         )
@@ -113,30 +117,28 @@ class DatabentoProvider(DataProvider):
         if pdf.empty:
             raise ValueError(f"No data returned from Databento for {symbol} {interval}")
 
+        # SDK v0.70+ returns real prices (not fixed-point /1e9)
         df = pl.DataFrame({
-            "timestamp": pdf.index.values if hasattr(pdf.index, 'values') else pdf["ts_event"].values,
-            "open": pdf["open"].values / 1e9,  # Databento fixed-point prices
-            "high": pdf["high"].values / 1e9,
-            "low": pdf["low"].values / 1e9,
-            "close": pdf["close"].values / 1e9,
+            "timestamp": pdf.index.values,
+            "open": pdf["open"].values,
+            "high": pdf["high"].values,
+            "low": pdf["low"].values,
+            "close": pdf["close"].values,
             "volume": pdf["volume"].values,
         })
 
-        # Ensure timestamp type
+        # Ensure timestamp is timezone-naive UTC datetime
         df = df.with_columns(
             pl.col("timestamp").cast(pl.Datetime("us")).dt.replace_time_zone(None)
         )
 
-        # Add tick_count (Databento doesn't provide this directly for OHLCV)
+        # Add tick_count estimate (Databento OHLCV doesn't provide this directly)
         if "tick_count" not in df.columns:
             df = df.with_columns(
                 (pl.col("volume") / 5).cast(pl.Int64).clip(lower_bound=1).alias("tick_count")
             )
 
         df = self.validate_output(df)
-
-        # Resample if needed (e.g., fetch 1m and user wants 5m)
-        # This is handled upstream — we return exactly what was requested
 
         logger.info(
             "Fetched %d bars for %s (%s) from %s to %s",
@@ -193,6 +195,7 @@ class DatabentoProvider(DataProvider):
             dataset="GLBX.MDP3",
             symbols=[db_symbol],
             schema=f"ohlcv-{db_interval}",
+            stype_in="continuous",
         )
         live_client.start()
 
@@ -200,10 +203,10 @@ class DatabentoProvider(DataProvider):
             if hasattr(record, "open"):
                 bar = pl.DataFrame({
                     "timestamp": [record.ts_event],
-                    "open": [record.open / 1e9],
-                    "high": [record.high / 1e9],
-                    "low": [record.low / 1e9],
-                    "close": [record.close / 1e9],
+                    "open": [record.open],
+                    "high": [record.high],
+                    "low": [record.low],
+                    "close": [record.close],
                     "volume": [int(record.volume)],
                     "tick_count": [max(1, int(record.volume / 5))],
                 })

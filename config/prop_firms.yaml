@@ -27,6 +27,8 @@ apex_50k:
   max_contracts:
     MNQ: 20
     NQ: 4
+    ES: 2
+    MES: 20
   consistency_rule:
     enabled: false
     max_single_day_pct: 100

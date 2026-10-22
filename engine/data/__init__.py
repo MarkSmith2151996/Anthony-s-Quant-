@@ -10,7 +10,7 @@ def get_provider(name: str):
     """Factory: return a DataProvider instance by name.
 
     Args:
-        name: One of "databento", "yahoo", "motivewave".
+        name: One of "databento", "yahoo", "motivewave", "ib".
 
     Returns:
         An instantiated DataProvider subclass.
@@ -25,10 +25,13 @@ def get_provider(name: str):
     elif name == "motivewave":
         from engine.data.providers.motivewave import MotiveWaveProvider
         return MotiveWaveProvider()
+    elif name in ("ib", "interactive_brokers"):
+        from engine.data.providers.interactive_brokers import IBProvider
+        return IBProvider()
     else:
         raise ValueError(
             f"Unknown provider: {name!r}. "
-            f"Available: 'databento', 'yahoo', 'motivewave'"
+            f"Available: 'databento', 'yahoo', 'motivewave', 'ib'"
         )
 
 

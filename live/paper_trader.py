@@ -550,7 +550,7 @@ class PaperTrader:
         if date_str != state.current_date:
             self.risk_manager.reset_daily(state, date_str)
             logger.info(
-                "New trading day: %s | balance: $%,.2f | drawdown: $%,.2f",
+                "New trading day: %s | balance: $%.2f | drawdown: $%.2f",
                 date_str,
                 state.current_balance,
                 state.current_drawdown,

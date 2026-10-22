@@ -47,3 +47,14 @@ Thumbs.db
 
 # Jupyter
 .ipynb_checkpoints/
+.secrets/
+*.env*
+
+# II-605 generated files and local backups
+*.bak
+*.bak-*
+*.log
+.pytest_cache/
+forward_test_state.json
+paper_trader_health.json
+paper_trader_state.json

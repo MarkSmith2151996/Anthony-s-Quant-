@@ -15,6 +15,7 @@ The dashboard reads from a ``PaperAccount``-like object that exposes:
 
 and from ``PropFirmRules`` for compliance limits.
 """
+from __future__ import annotations
 
 import json
 import logging
